@@ -1,9 +1,17 @@
 import React, { useState } from "react";
-import {supabase} from "../supabase/client";
-import { Container, Paper, Box, Typography, Divider, Link, Avatar } from "@mui/material";
+import { supabase } from "../supabase/client";
+import {
+  Container,
+  Paper,
+  Box,
+  Typography,
+  Divider,
+  Link,
+  Avatar,
+} from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import TextField from "../components/TextField";
 import Button from "../components/Button";
 
@@ -18,22 +26,22 @@ const Register: React.FC = () => {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (password !== confirmPassword){
-      alert("Password do not match")
+    if (password !== confirmPassword) {
+      alert("Password do not match");
+    } else if(password === confirmPassword) {
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+      });
+
+      if (error) {
+        alert("Registration failed: " + error.message);
+      } else {
+        alert("Registration successful!");
+        navigate("/login");
+      }
     }
-
-    const { error } = await supabase.auth.signUp({
-    email,
-    password,
-  });
-
-  if (error) {
-    alert("Registration failed: " + error.message);
-  } else {
-    alert("Registration successful!");
-    navigate("/login");
-  }
-  }
+  };
 
   return (
     <Container component="main" maxWidth="xs">
@@ -66,7 +74,7 @@ const Register: React.FC = () => {
               margin="dense"
               label="Password"
               name="password"
-              type="password"  
+              type="password"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -75,16 +83,16 @@ const Register: React.FC = () => {
               margin="dense"
               label="Confirm Password"
               name="confirmPassword"
-              type="password" 
+              type="password"
               required
               value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)} 
+              onChange={(e) => setConfirmPassword(e.target.value)}
             />
             <Button type="submit" fullWidth sx={{ mt: 3, mb: 2 }}>
               Register Account
             </Button>
           </Box>
-          <Box sx={{ width: '100%', mb: 2 }}>
+          <Box sx={{ width: "100%", mb: 2 }}>
             <Divider>
               <Typography variant="body2" color="textSecondary">
                 or
