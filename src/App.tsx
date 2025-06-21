@@ -1,25 +1,38 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useEffect } from 'react';
 import './App.css';
+import Navbar from './components/Navbar';
+import AppRoutes from './routes/AppRoutes';
+import { useDispatch } from 'react-redux';
+import { setUser } from './features/auth/authSlice';
+import { supabase } from './supabase/client';
 
 function App() {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const restoreSession = async () => {
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.getUser();
+
+      if (user) {
+        dispatch(setUser(user));
+      }
+
+      if (error) {
+        console.error('Session restore error:', error.message);
+      }
+    };
+
+    restoreSession();
+  }, [dispatch]);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <Navbar />
+      <AppRoutes />
+    </>
   );
 }
 
