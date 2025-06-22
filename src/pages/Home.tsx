@@ -124,7 +124,7 @@ const Home: React.FC = () => {
           <Grid container direction="column" spacing={2}>
             {blogs.map((blog) => (
               <Grid key={blog.id} size={{ xs: 12, sm: 12 }}>
-                <Paper elevation={2} sx={{ p: 2, borderRadius: 2 }}>
+                <Paper elevation={2} sx={{ p: 2, borderRadius: 2, backgroundColor: '#1E1E1E' }}>
                   <Box
                     display="flex"
                     justifyContent="space-between"

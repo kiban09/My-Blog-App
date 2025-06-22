@@ -63,7 +63,7 @@ const Register: React.FC = () => {
 
   return (
     <Container component="main" maxWidth="xs">
-      <Paper elevation={6} sx={{ mt: 8, p: 4, borderRadius: 2 }}>
+      <Paper elevation={6} sx={{ mt: 8, p: 4, borderRadius: 2, backgroundColor: '#1E1E1E' }}>
         <Box display="flex" flexDirection="column" alignItems="center">
           <Avatar sx={{ m: 1, bgcolor: "primary.main" }}>
             <PersonAddIcon />

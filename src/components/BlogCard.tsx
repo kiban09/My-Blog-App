@@ -14,7 +14,7 @@ interface BlogCardProps {
 
 const BlogCard: React.FC<BlogCardProps> = ({ title, content, onEdit, onDelete }) => {
   return (
-    <Card sx={{ maxWidth: 345, marginBottom: 2 }}>
+    <Card sx={{ maxWidth: 345, marginBottom: 2,p: 2, borderRadius: 2, backgroundColor: '#1E1E1E' }} >
       <CardContent>
         <Typography variant="h5" component="div" gutterBottom>
           {title}

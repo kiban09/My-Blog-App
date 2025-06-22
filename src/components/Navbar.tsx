@@ -21,7 +21,7 @@ const Navbar = () => {
   const profile = useAppSelector((state: RootState) => state.auth.profile);
 
   return (
-    <AppBar position="static">
+    <AppBar position="static" sx={{ backgroundColor: '#1A1A1A' }}>
       <Toolbar sx={{ justifyContent: 'space-between' }}>
         <Typography
           variant="h6"
@@ -46,9 +46,8 @@ const Navbar = () => {
               </Button>
             </>
           ) : (
-            <Button color="inherit" component={RouterLink} to="/login">
-              Login
-            </Button>
+            <>
+            </>
           )}
         </Box>
       </Toolbar>
