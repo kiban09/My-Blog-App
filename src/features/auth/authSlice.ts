@@ -3,12 +3,16 @@ import * as authAPI from './authAPI';
 
 interface AuthState {
   user: any | null;
+  profile: {
+    full_name: string;
+  } | null;
   loading: boolean;
   error: string | null;
 }
 
 const initialState: AuthState = {
   user: null,
+  profile: null,
   loading: false,
   error: null,
 };
@@ -47,6 +51,12 @@ const authSlice = createSlice({
     setUser(state, action) {
       state.user = action.payload;
     },
+    setUserProfile(state, action) {
+      state.profile = action.payload;
+    },
+    clearProfile(state) {
+      state.profile = null;
+    },
     clearError(state) {
       state.error = null;
     },
@@ -83,5 +93,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { setUser, clearError } = authSlice.actions;
+export const { setUser, setUserProfile, clearProfile, clearError } = authSlice.actions;
 export default authSlice.reducer;

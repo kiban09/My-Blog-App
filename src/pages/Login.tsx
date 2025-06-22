@@ -12,7 +12,7 @@ import { supabase } from "../supabase/client";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import TextField from "../components/TextField";
 import Button from "../components/Button";
-import { setUser } from "../features/auth/authSlice";
+import { setUser, setUserProfile } from "../features/auth/authSlice";
 import { useAppDispatch } from "../redux/hooks";
 import { useSelector } from "react-redux";
 import { RootState } from "../redux/store";
@@ -31,7 +31,7 @@ const LoginPage: React.FC = () => {
   }
 
   const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
+  e.preventDefault();
 
     if (!email || !password) {
       alert("Please enter email or password.");
@@ -43,15 +43,26 @@ const LoginPage: React.FC = () => {
       password,
     });
 
-    if (data.user) {
-      dispatch(setUser(data.user));
-      navigate("/");
-    }
-
     if (error) {
       console.error("Login error:", error.message);
       alert("Login failed: " + error.message);
       return;
+    }
+
+    if (data.user) {
+      dispatch(setUser(data.user));
+
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("full_name")
+        .eq("id", data.user.id)
+        .single();
+
+      if (profile) {
+        dispatch(setUserProfile(profile));
+      }
+
+      navigate("/");
     }
   };
 

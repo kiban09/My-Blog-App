@@ -2,7 +2,7 @@ import React from 'react';
 import { AppBar, Toolbar, Typography, Button, Box } from '@mui/material';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { RootState } from '../redux/store';
-import { signOutUser } from '../features/auth/authSlice';
+import { signOutUser, clearProfile } from '../features/auth/authSlice';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { supabase } from '../supabase/client';
 
@@ -14,22 +14,25 @@ const Navbar = () => {
   const handleLogout = async () => {
     await supabase.auth.signOut();
     dispatch(signOutUser());
+    dispatch(clearProfile());
     navigate('/login');
   };
 
+  const profile = useAppSelector((state: RootState) => state.auth.profile);
+
   return (
     <AppBar position="static">
-      <Toolbar>
+      <Toolbar sx={{ justifyContent: 'space-between' }}>
         <Typography
           variant="h6"
           component={RouterLink}
           to="/"
           sx={{ flexGrow: 1, color: 'inherit', textDecoration: 'none' }}
         >
-          My Blog App
+          {profile?.full_name ? `Hi, ${profile.full_name.split(' ')[0]}` : 'My Blog App'}
         </Typography>
 
-        <Box>
+        <Box sx={{ flex: 1, textAlign: 'right' }}>
           {user ? (
             <>
               <Button color="inherit" component={RouterLink} to="/home">

@@ -28,17 +28,35 @@ const Register: React.FC = () => {
 
     if (password !== confirmPassword) {
       alert("Password do not match");
-    } else if(password === confirmPassword) {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-      });
+      return;
+    }
 
-      if (error) {
-        alert("Registration failed: " + error.message);
-      } else {
-        alert("Registration successful!");
-        navigate("/login");
+    const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+      email,
+      password,
+    });
+
+    if (signUpError) {
+      alert("Registration failed: " + signUpError.message);
+      return;
+    } else {
+      alert("Registration successful!");
+      navigate("/login");
+    }
+
+    const userId = signUpData?.user?.id;
+
+    if (userId) {
+      const { error: profileError } = await supabase.from("profiles").insert([
+        {
+          id: userId,
+          full_name: Fname,
+        },
+      ]);
+
+      if (profileError) {
+        alert("Failed to save profile: " + profileError.message);
+        return;
       }
     }
   };
