@@ -14,3 +14,17 @@ export const insertBlog = async (blog: { title: string; content: string }) => {
   if (error) throw error;
   return data;
 };
+
+export const editBlog = async (blog: { id: number; title: string; content: string }) => {
+  const { data, error } = await supabase
+    .from('blogs')
+    .update({
+      title: blog.title,
+      content: blog.content,
+    })
+    .eq('id', blog.id)
+    .select();
+
+  if (error) throw error;
+  return data;
+};

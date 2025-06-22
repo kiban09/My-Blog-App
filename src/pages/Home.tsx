@@ -10,13 +10,12 @@ import {
   CircularProgress,
 } from "@mui/material";
 import Grid from "@mui/material/Grid";
-import CreateBlogDialog from "../components/BlogDialog";
+import BlogDialog from "../components/BlogDialog";
 import {
   Add as AddIcon,
   Edit as EditIcon,
   Delete as DeleteIcon,
 } from "@mui/icons-material";
-import { useNavigate } from "react-router-dom";
 import { supabase } from "../supabase/client";
 
 interface Blog {
@@ -33,8 +32,10 @@ const Home: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-
-  const navigate = useNavigate();
+  const [editMode, setEditMode] = useState(false);
+  const [editBlogId, setEditBlogId] = useState<number | null>(null);
+  const [editTitle, setEditTitle] = useState('');
+  const [editContent, setEditContent] = useState('');
 
   const fetchBlogs = async (page: number) => {
   setLoading(true);
@@ -55,7 +56,7 @@ const Home: React.FC = () => {
     .from('blogs')
     .select('*', { count: 'exact' })
     .eq('author_id', user_id)
-    .order('created_at', { ascending: false })
+    .order('updated_at', { ascending: false })
     .range(start, end);
 
   if (error) {
@@ -131,8 +132,14 @@ const Home: React.FC = () => {
                     <Grid size={{ xs: 4, sm: 3, md: 2, lg: 1.5 }}>
                       <Box>
                         <IconButton
-                          onClick={() => navigate(`/edit/${blog.id}`)}
-                        >
+                          onClick={() => {
+                          setEditMode(true);
+                          setEditBlogId(blog.id);
+                          setEditTitle(blog.title);
+                          setEditContent(blog.content);
+                          setOpen(true);
+                        }}
+>
                           <EditIcon />
                         </IconButton>
                         <IconButton>
@@ -157,12 +164,20 @@ const Home: React.FC = () => {
         </Box>
       </Container>
 
-      <CreateBlogDialog
+      <BlogDialog
         open={open}
         onClose={() => {
           setOpen(false);
+          setEditMode(false);
+          setEditBlogId(null);
+          setEditTitle('');
+          setEditContent('');
           fetchBlogs(currentPage);
         }}
+        isEditing={editMode}
+        blogId={editBlogId || undefined}
+        initialTitle={editTitle}
+        initialContent={editContent}
       />
     </>
   );

@@ -3,31 +3,45 @@ import DialogWrapper from './DialogWrapper';
 import BlogForm from './BlogForm';
 import { AppDispatch } from '../redux/store';
 import { useDispatch } from 'react-redux';
-import { addBlog } from '../features/blog/blogThunks';
+import { addBlog, updateBlog } from '../features/blog/blogThunks';
+import { useEffect } from 'react';
 
 interface Props {
   open: boolean;
   onClose: () => void;
+  isEditing?: boolean;
+  blogId?: number;
+  initialTitle?: string;
+  initialContent?: string;
 }
 
-const CreateBlogDialog: React.FC<Props> = ({ open, onClose }) => {
+const BlogDialog: React.FC<Props> = ({ open, onClose, isEditing, blogId, initialTitle, initialContent }) => {
     const dispatch = useDispatch<AppDispatch>();
-    const [title, setTitle] = useState('');
-    const [content, setContent] = useState('');
+    const [title, setTitle] = useState(initialTitle || '');
+    const [content, setContent] = useState(initialContent || '');
+
 
     const handleCreate = async () => {
         if (!title || !content) return alert("Please fill in all fields.");
 
         try {
+          if (isEditing && blogId !== undefined) {
+            await dispatch(updateBlog({ id: blogId, title, content }));
+          } else {
             await dispatch(addBlog({ title, content }));
-            onClose();
-            setTitle('');
-            setContent('');
+          }
+
+          onClose();
         } catch (err) {
-            console.error('Failed to create blog:', err);
-            alert("Something went wrong");
+          console.error('Failed to save blog:', err);
+          alert("Something went wrong");
         }
     };
+
+    useEffect(() => {
+      setTitle(initialTitle || '');
+      setContent(initialContent || '');
+    }, [initialTitle, initialContent, open]);
 
   return (
     <DialogWrapper
@@ -35,7 +49,7 @@ const CreateBlogDialog: React.FC<Props> = ({ open, onClose }) => {
         onClose={onClose}
         title="Create New Blog"
         onSubmit={handleCreate}
-        submitLabel="Create"
+        submitLabel={isEditing ? "Update" : "Create"}
     >
     <BlogForm
         title={title}
@@ -49,4 +63,4 @@ const CreateBlogDialog: React.FC<Props> = ({ open, onClose }) => {
   );
 };
 
-export default CreateBlogDialog;
+export default BlogDialog;
