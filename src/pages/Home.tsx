@@ -116,7 +116,7 @@ const Home: React.FC = () => {
                     justifyContent="space-between"
                     alignItems="flex-start"
                   >
-                    <Grid size={{ xs: 8, sm: 9, md: 10, lg: 10.5 }}>
+                    <Grid size={{ xs: 9.5, sm: 9, md: 10, lg: 10.5 }}>
                       <Box>
                         <Typography variant="h6" fontWeight="bold">
                           {blog.title}
@@ -129,7 +129,7 @@ const Home: React.FC = () => {
                         </Typography>
                       </Box>
                     </Grid>
-                    <Grid size={{ xs: 4, sm: 3, md: 2, lg: 1.5 }}>
+                    <Grid size={{ xs: 2.5, sm: 3, md: 2, lg: 1.5 }}>
                       <Box>
                         <IconButton
                           onClick={() => {
