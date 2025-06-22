@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Container,
@@ -6,12 +6,11 @@ import {
   IconButton,
   Paper,
   CircularProgress,
-  Grid
-} from '@mui/material';
-import RestoreFromTrashIcon from '@mui/icons-material/RestoreFromTrash';
-import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
-import { supabase } from '../supabase/client';
-import { useNavigate } from 'react-router-dom';
+  Grid,
+} from "@mui/material";
+import RestoreFromTrashIcon from "@mui/icons-material/RestoreFromTrash";
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
+import { supabase } from "../supabase/client";
 
 interface Blog {
   id: number;
@@ -25,7 +24,6 @@ interface Blog {
 const TrashPage: React.FC = () => {
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
 
   const fetchTrashedBlogs = async () => {
     setLoading(true);
@@ -35,14 +33,14 @@ const TrashPage: React.FC = () => {
     if (!user_id) return;
 
     const { data, error } = await supabase
-      .from('blogs')
-      .select('*')
-      .eq('author_id', user_id)
-      .eq('is_deleted', true)
-      .order('updated_at', { ascending: false });
+      .from("blogs")
+      .select("*")
+      .eq("author_id", user_id)
+      .eq("is_deleted", true)
+      .order("updated_at", { ascending: false });
 
     if (error) {
-      console.error('Error fetching trashed blogs:', error.message);
+      console.error("Error fetching trashed blogs:", error.message);
     } else {
       setBlogs(data || []);
     }
@@ -55,21 +53,24 @@ const TrashPage: React.FC = () => {
   }, []);
 
   const handleRestore = async (id: number) => {
+    // eslint-disable-next-line no-restricted-globals
+    const confirmRestore = confirm("Are you sure you want to restore this blog?");
+    if (!confirmRestore) return;
+
     const { error } = await supabase
-      .from('blogs')
+      .from("blogs")
       .update({ is_deleted: false })
-      .eq('id', id);
+      .eq("id", id);
 
     if (!error) fetchTrashedBlogs();
   };
 
   const handlePermanentDelete = async (id: number) => {
-    const { error } = await supabase
-      .from('blogs')
-      .delete()
-      .eq('id', id);
-
-    if (!error) fetchTrashedBlogs();
+    // eslint-disable-next-line no-restricted-globals
+    if (confirm("Permanently delete this blog? This action cannot be undone.")) {
+        const { error } = await supabase.from("blogs").delete().eq("id", id);
+        if (!error) fetchTrashedBlogs();
+    }
   };
 
   return (
@@ -85,23 +86,38 @@ const TrashPage: React.FC = () => {
       ) : (
         <Grid container direction="column" spacing={2}>
           {blogs.map((blog) => (
-            <Grid key={blog.id}>
+            <Grid key={blog.id} size={{ xs: 12, sm: 12 }}>
               <Paper elevation={2} sx={{ p: 2, borderRadius: 2 }}>
-                <Box display="flex" justifyContent="space-between" alignItems="flex-start">
-                  <Box>
-                    <Typography variant="h6" fontWeight="bold">
-                      {blog.title}
-                    </Typography>
-                    <Typography variant="body1">{blog.content}</Typography>
-                  </Box>
-                  <Box>
-                    <IconButton onClick={() => handleRestore(blog.id)}>
-                      <RestoreFromTrashIcon color="primary" />
-                    </IconButton>
-                    <IconButton onClick={() => handlePermanentDelete(blog.id)}>
-                      <DeleteForeverIcon color="error" />
-                    </IconButton>
-                  </Box>
+                <Box
+                  display="flex"
+                  justifyContent="space-between"
+                  alignItems="flex-start"
+                >
+                  <Grid size={{ xs: 9.5, sm: 9, md: 10, lg: 10.5 }}>
+                    <Box>
+                      <Typography variant="h6" fontWeight="bold">
+                        {blog.title}
+                      </Typography>
+                      <Typography
+                        variant="body1"
+                        sx={{ wordWrap: "break-word" }}
+                      >
+                        {blog.content}
+                      </Typography>
+                    </Box>
+                  </Grid>
+                  <Grid size={{ xs: 2.5, sm: 3, md: 2, lg: 1.5 }}>
+                    <Box>
+                      <IconButton onClick={() => handleRestore(blog.id)}>
+                        <RestoreFromTrashIcon color="primary" />
+                      </IconButton>
+                      <IconButton
+                        onClick={() => handlePermanentDelete(blog.id)}
+                      >
+                        <DeleteForeverIcon color="error" />
+                      </IconButton>
+                    </Box>
+                  </Grid>
                 </Box>
               </Paper>
             </Grid>

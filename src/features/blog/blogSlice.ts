@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { addBlog } from './blogThunks';
+import { addBlog, softDeleteBlogThunk  } from './blogThunks';
 
 interface BlogState {
   blogs: any[];
@@ -30,6 +30,9 @@ const blogSlice = createSlice({
       .addCase(addBlog.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
+      })
+      .addCase(softDeleteBlogThunk.fulfilled, (state, action) => {
+        state.blogs = state.blogs.filter(blog => blog.id !== action.payload);
       });
   },
 });

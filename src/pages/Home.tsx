@@ -17,6 +17,9 @@ import {
   Delete as DeleteIcon,
 } from "@mui/icons-material";
 import { supabase } from "../supabase/client";
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../redux/store';
+import { softDeleteBlogThunk } from '../features/blog/blogThunks';
 
 interface Blog {
   id: number;
@@ -37,37 +40,48 @@ const Home: React.FC = () => {
   const [editTitle, setEditTitle] = useState('');
   const [editContent, setEditContent] = useState('');
 
+  const dispatch = useDispatch<AppDispatch>();
+
+  const handleSoftDelete = async (id: number) => {
+    // eslint-disable-next-line no-restricted-globals
+    if (confirm("This blog will be moved to the trash")) {
+      await dispatch(softDeleteBlogThunk(id));
+      fetchBlogs(currentPage);
+    }
+  };
+
   const fetchBlogs = async (page: number) => {
-  setLoading(true);
+    setLoading(true);
 
-  const { data: userData } = await supabase.auth.getUser();
-  const user_id = userData?.user?.id;
+    const { data: userData } = await supabase.auth.getUser();
+    const user_id = userData?.user?.id;
 
-  if (!user_id) {
-    setBlogs([]);
+    if (!user_id) {
+      setBlogs([]);
+      setLoading(false);
+      return;
+    }
+
+    const start = (page - 1) * blogsPerPage;
+    const end = start + blogsPerPage - 1;
+
+    const { data, count, error } = await supabase
+      .from('blogs')
+      .select('*', { count: 'exact' })
+      .eq('author_id', user_id)
+      .eq('is_deleted', false)
+      .order('updated_at', { ascending: false })
+      .range(start, end);
+
+    if (error) {
+      console.error('Error fetching blogs:', error.message);
+    } else {
+      setBlogs(data || []);
+      setTotalPages(Math.ceil((count || 0) / blogsPerPage));
+    }
+
     setLoading(false);
-    return;
-  }
-
-  const start = (page - 1) * blogsPerPage;
-  const end = start + blogsPerPage - 1;
-
-  const { data, count, error } = await supabase
-    .from('blogs')
-    .select('*', { count: 'exact' })
-    .eq('author_id', user_id)
-    .order('updated_at', { ascending: false })
-    .range(start, end);
-
-  if (error) {
-    console.error('Error fetching blogs:', error.message);
-  } else {
-    setBlogs(data || []);
-    setTotalPages(Math.ceil((count || 0) / blogsPerPage));
-  }
-
-  setLoading(false);
-};
+  };
 
 
   useEffect(() => {
@@ -142,7 +156,7 @@ const Home: React.FC = () => {
 >
                           <EditIcon />
                         </IconButton>
-                        <IconButton>
+                        <IconButton onClick={() => handleSoftDelete(blog.id)}>
                           <DeleteIcon />
                         </IconButton>
                       </Box>

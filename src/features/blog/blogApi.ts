@@ -28,3 +28,12 @@ export const editBlog = async (blog: { id: number; title: string; content: strin
   if (error) throw error;
   return data;
 };
+
+export const softDeleteBlog = async (id: number) => {
+  const { error } = await supabase
+    .from('blogs')
+    .update({ is_deleted: true })
+    .eq('id', id);
+
+  if (error) throw error;
+};
