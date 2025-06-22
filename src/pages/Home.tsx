@@ -10,7 +10,7 @@ import {
   CircularProgress,
 } from "@mui/material";
 import Grid from "@mui/material/Grid";
-import CreateBlogDialog from "../components/CreateBlogDialog";
+import CreateBlogDialog from "../components/BlogDialog";
 import {
   Add as AddIcon,
   Edit as EditIcon,
@@ -37,26 +37,37 @@ const Home: React.FC = () => {
   const navigate = useNavigate();
 
   const fetchBlogs = async (page: number) => {
-    setLoading(true);
+  setLoading(true);
 
-    const start = (page - 1) * blogsPerPage;
-    const end = start + blogsPerPage - 1;
+  const { data: userData } = await supabase.auth.getUser();
+  const user_id = userData?.user?.id;
 
-    const { data, count, error } = await supabase
-      .from("blogs")
-      .select("*", { count: "exact" })
-      .order("created_at", { ascending: false })
-      .range(start, end);
-
-    if (error) {
-      console.error("Error fetching blogs:", error.message);
-    } else {
-      setBlogs(data || []);
-      setTotalPages(Math.ceil((count || 0) / blogsPerPage));
-    }
-
+  if (!user_id) {
+    setBlogs([]);
     setLoading(false);
-  };
+    return;
+  }
+
+  const start = (page - 1) * blogsPerPage;
+  const end = start + blogsPerPage - 1;
+
+  const { data, count, error } = await supabase
+    .from('blogs')
+    .select('*', { count: 'exact' })
+    .eq('author_id', user_id)
+    .order('created_at', { ascending: false })
+    .range(start, end);
+
+  if (error) {
+    console.error('Error fetching blogs:', error.message);
+  } else {
+    setBlogs(data || []);
+    setTotalPages(Math.ceil((count || 0) / blogsPerPage));
+  }
+
+  setLoading(false);
+};
+
 
   useEffect(() => {
     fetchBlogs(currentPage);
