@@ -5,11 +5,14 @@ import { RootState } from '../redux/store';
 import { signOutUser, clearProfile } from '../features/auth/authSlice';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { supabase } from '../supabase/client';
+import { useLocation } from 'react-router-dom';
 
 const Navbar = () => {
   const user = useAppSelector((state: RootState) => state.auth.user);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+
+  const location = useLocation();
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -35,13 +38,19 @@ const Navbar = () => {
         <Box sx={{ flex: 1, textAlign: 'right' }}>
           {user ? (
             <>
-              <Button color="inherit" component={RouterLink} to="/home">
+              <Button color="inherit" component={RouterLink} to="/home" sx={(theme) =>({
+          borderBottom: location.pathname === '/home' ? `2px solid ${theme.palette.primary.main}` : 'none',
+          borderRadius: 0, mr: 2
+        })}>
                 Home
               </Button>
-              <Button color="inherit" component={RouterLink} to="/trash">
+              <Button color="inherit" component={RouterLink} to="/trash" sx={(theme) =>({
+          borderBottom: location.pathname === '/trash' ? `2px solid ${theme.palette.primary.main}` : 'none',
+          borderRadius: 0, mr: 2
+        })}>
                 Trash
               </Button>
-              <Button color="inherit" onClick={handleLogout}>
+              <Button color="inherit" onClick={handleLogout} sx={{mr: 2}}>
                 Logout
               </Button>
             </>
