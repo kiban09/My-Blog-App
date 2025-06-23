@@ -3,11 +3,11 @@ import {
   Box,
   Container,
   Typography,
-  IconButton,
   Paper,
   CircularProgress,
   Grid,
 } from "@mui/material";
+import IconButtonWithTooltip from "../components/IconButtonWithTooltip";
 import RestoreFromTrashIcon from "@mui/icons-material/RestoreFromTrash";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import { supabase } from "../supabase/client";
@@ -108,14 +108,16 @@ const TrashPage: React.FC = () => {
                   </Grid>
                   <Grid size={{ xs: 2.5, sm: 3, md: 2, lg: 1.5 }}>
                     <Box>
-                      <IconButton onClick={() => handleRestore(blog.id)}>
-                        <RestoreFromTrashIcon color="primary" />
-                      </IconButton>
-                      <IconButton
+                      <IconButtonWithTooltip 
+                        onClick={() => handleRestore(blog.id)}
+                        icon={<RestoreFromTrashIcon color="primary" />}
+                        tooltip="Restore"
+                      />
+                      <IconButtonWithTooltip
                         onClick={() => handlePermanentDelete(blog.id)}
-                      >
-                        <DeleteForeverIcon color="error" />
-                      </IconButton>
+                        icon={<DeleteForeverIcon color="error" />}
+                        tooltip="Delete Permanently"
+                      />
                     </Box>
                   </Grid>
                 </Box>

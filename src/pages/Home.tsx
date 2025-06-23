@@ -4,13 +4,13 @@ import {
   Container,
   Typography,
   Button,
-  IconButton,
   Paper,
   Pagination,
   CircularProgress,
 } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import BlogDialog from "../components/BlogDialog";
+import IconButtonWithTooltip from "../components/IconButtonWithTooltip";
 import {
   Add as AddIcon,
   Edit as EditIcon,
@@ -145,20 +145,21 @@ const Home: React.FC = () => {
                     </Grid>
                     <Grid size={{ xs: 2.5, sm: 3, md: 2, lg: 1.5 }}>
                       <Box>
-                        <IconButton
+                        <IconButtonWithTooltip
                           onClick={() => {
                           setEditMode(true);
                           setEditBlogId(blog.id);
                           setEditTitle(blog.title);
                           setEditContent(blog.content);
-                          setOpen(true);
-                        }}
->
-                          <EditIcon />
-                        </IconButton>
-                        <IconButton onClick={() => handleSoftDelete(blog.id)}>
-                          <DeleteIcon />
-                        </IconButton>
+                          setOpen(true);}}
+                          icon={<EditIcon />}
+                          tooltip = "Edit"
+                        />
+                        <IconButtonWithTooltip 
+                          onClick={() => handleSoftDelete(blog.id)}
+                          icon = {<DeleteIcon />}
+                          tooltip = "Move to Trash"
+                        />
                       </Box>
                     </Grid>
                   </Box>
