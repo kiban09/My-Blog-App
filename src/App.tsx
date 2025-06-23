@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter } from 'react-router-dom';
 import './App.css';
 import Navbar from './components/Navbar';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
@@ -49,13 +48,11 @@ function App() {
   }, [dispatch]);
 
   return (
-    <BrowserRouter basename="/your-repo-name">
       <ThemeProvider theme={darkTheme}>
         <CssBaseline />
         <Navbar />
         <AppRoutes />
       </ThemeProvider>
-    </BrowserRouter>
   );
 }
 
