@@ -1,7 +1,7 @@
 {
   "name": "my-blog-app",
   "version": "0.1.0",
-  "homepage": "https://kiban09.github.io/my-Blog-App/",
+  "homepage": "https://kiban09.github.io/My-Blog-App/",
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.14.0",
