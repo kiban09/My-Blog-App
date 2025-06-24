@@ -16,29 +16,21 @@ import {
   Edit as EditIcon,
   Delete as DeleteIcon,
 } from "@mui/icons-material";
-import { supabase } from "../supabase/client";
+import { useAppSelector } from '../redux/hooks';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../redux/store';
-import { softDeleteBlogThunk } from '../features/blog/blogThunks';
-
-interface Blog {
-  id: number;
-  title: string;
-  content: string;
-}
-
-const blogsPerPage = 5;
+import { softDeleteBlogThunk, fetchBlogsThunk } from '../features/blog/blogThunks';
 
 const Home: React.FC = () => {
   const [open, setOpen] = useState(false);
-  const [blogs, setBlogs] = useState<Blog[]>([]);
-  const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
   const [editMode, setEditMode] = useState(false);
   const [editBlogId, setEditBlogId] = useState<number | null>(null);
   const [editTitle, setEditTitle] = useState('');
   const [editContent, setEditContent] = useState('');
+  const blogs = useAppSelector((state) => state.blog.blogs);
+  const loading = useAppSelector((state) => state.blog.loading);
+  const totalPages = useAppSelector((state) => state.blog.totalPages);
 
   const dispatch = useDispatch<AppDispatch>();
 
@@ -46,47 +38,13 @@ const Home: React.FC = () => {
     // eslint-disable-next-line no-restricted-globals
     if (confirm("This blog will be moved to the trash")) {
       await dispatch(softDeleteBlogThunk(id));
-      fetchBlogs(currentPage);
+      dispatch(fetchBlogsThunk(currentPage));
     }
   };
-
-  const fetchBlogs = async (page: number) => {
-    setLoading(true);
-
-    const { data: userData } = await supabase.auth.getUser();
-    const user_id = userData?.user?.id;
-
-    if (!user_id) {
-      setBlogs([]);
-      setLoading(false);
-      return;
-    }
-
-    const start = (page - 1) * blogsPerPage;
-    const end = start + blogsPerPage - 1;
-
-    const { data, count, error } = await supabase
-      .from('blogs')
-      .select('*', { count: 'exact' })
-      .eq('author_id', user_id)
-      .eq('is_deleted', false)
-      .order('updated_at', { ascending: false })
-      .range(start, end);
-
-    if (error) {
-      console.error('Error fetching blogs:', error.message);
-    } else {
-      setBlogs(data || []);
-      setTotalPages(Math.ceil((count || 0) / blogsPerPage));
-    }
-
-    setLoading(false);
-  };
-
 
   useEffect(() => {
-    fetchBlogs(currentPage);
-  }, [currentPage]);
+    dispatch(fetchBlogsThunk(currentPage));
+  }, [dispatch, currentPage]);
 
   const handlePageChange = (
     event: React.ChangeEvent<unknown>,
@@ -187,7 +145,7 @@ const Home: React.FC = () => {
           setEditBlogId(null);
           setEditTitle('');
           setEditContent('');
-          fetchBlogs(currentPage);
+          dispatch(fetchBlogsThunk(currentPage));
         }}
         isEditing={editMode}
         blogId={editBlogId || undefined}
